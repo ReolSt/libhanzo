@@ -1,17 +1,6 @@
-#include <stdio.h>
 #include "Vector.h"
 
-int __for_vector_min(int a, int b)
-{
-  return a > b ? b : a;
-}
-
-int __for_vector_max(int a, int b)
-{
-  return a > b ? a : b;
-}
-
-void __vector_extend(Vector *v)
+void __Vector_Extend(Vector *v)
 {
   if(v->array!=NULL)
   {
@@ -23,14 +12,14 @@ void __vector_extend(Vector *v)
   }
 }
 
-void __vector_rshift(Vector *v, int index)
+void __Vector_RShift(Vector *v, int index)
 {
   if(v->size > 0 && index >= 0 && index < v->size)
   {
     v->size += 1;
     if(v->size > v->capacity)
     {
-      __vector_extend(v);
+      __Vector_Extend(v);
     }
     memmove((char*)v->array + (index + 1) * v->unitsize,
             (char*)v->array + index * v->unitsize,
@@ -38,7 +27,7 @@ void __vector_rshift(Vector *v, int index)
   }
 }
 
-void __vector_lshift(Vector *v, int index)
+void __Vector_LShift(Vector *v, int index)
 {
   if(index>=0 && index < v->size)
   {
@@ -49,69 +38,76 @@ void __vector_lshift(Vector *v, int index)
   }
 }
 
-void vector_init(Vector *v, size_t unitsize)
+void Vector_Initialize(Vector *v, size_t unitsize)
 {
+  v->initialized = 1;
   v->unitsize = unitsize;
   v->size = 0;
   v->capacity = VECTOR_DEFAULT_CAPACITY;
   v->array = calloc(v->capacity, v->unitsize);
 }
 
-void vector_clear(Vector *v)
+int Vector_Initialized(Vector *v)
 {
-  free(v->array);
-  vector_init(v, v->unitsize);
+  return v->initialized;
 }
 
-void vector_destroy(Vector *v)
+void Vector_Clear(Vector *v)
 {
+  free(v->array);
+  Vector_init(v, v->unitsize);
+}
+
+void Vector_Destroy(Vector *v)
+{
+  v->initialized = 0;
   v->size = 0;
   v->capacity = 0;
   free(v->array);
   v->array = NULL;
 }
 
-void vector_shrink(Vector *v)
+void Vector_Shrink(Vector *v)
 {
   if(v->capacity > VECTOR_DEFAULT_CAPACITY)
   {
-    vector_resize(v, v->capacity / 2);
+    Vector_Resize(v, v->capacity / 2);
   }
 }
 
-void vector_resize(Vector *v, size_t size)
+void Vector_Resize(Vector *v, size_t size)
 {
   v->capacity = size;
   void* resized_array = malloc(v->capacity * v->unitsize);
   memcpy(resized_array, v->array, v->capacity * v->unitsize);
   free(v->array);
   v->array = resized_array;
-  v->size = __for_vector_min(v->size, v->capacity);
+  v->size = min(v->size, v->capacity);
 }
 
-void vector_insert(Vector *v, int index, const void *x)
+void Vector_Insert(Vector *v, int index, const void *x)
 {
   if(index >= 0 && index < v->size)
   {
-    __vector_rshift(v, index);
+    __Vector_RShift(v, index);
     memcpy((char*)v->array + index * v->unitsize, x, v->unitsize);
   }
   else if(index == v->size)
   {
-    vector_push_back(v, x);
+    Vector_PushBack(v, x);
   }
 }
 
-void vector_remove(Vector *v, int index)
+void Vector_Remove(Vector *v, int index)
 {
-  __vector_lshift(v, index);
+  __Vector_LShift(v, index);
   if(v->size < v->capacity / 3)
   {
-    vector_shrink(v);
+    Vector_Shrink(v);
   }
 }
 
-void* vector_at(Vector *v, int index)
+void* Vector_At(Vector *v, int index)
 {
   if(index >= 0 && index < v->size)
   {
@@ -123,37 +119,37 @@ void* vector_at(Vector *v, int index)
   }
 }
 
-void* vector_front(Vector *v)
+void* Vector_Front(Vector *v)
 {
   return v->array;
 }
 
-void* vector_back(Vector *v)
+void* Vector_Back(Vector *v)
 {
   return (char*)v->array + (v->size - 1) * v->unitsize;
 }
 
-size_t vector_size(Vector *v)
+size_t Vector_Size(Vector *v)
 {
   return v->size;
 }
 
-size_t vector_capacity(Vector *v)
+size_t Vector_Capacity(Vector *v)
 {
   return v->capacity;
 }
 
-void vector_push_back(Vector *v, const void *x)
+void Vector_PushBack(Vector *v, const void *x)
 {
   v->size+=1;
   if(v->size > v->capacity)
   {
-    __vector_extend(v);
+    __Vector_Extend(v);
   }
   memcpy((char*)v->array + (v->size - 1) * v->unitsize, x, v->unitsize);
 }
 
-void vector_pop_back(Vector *v)
+void Vector_PopBack(Vector *v)
 {
   if(v->size > 0)
   {
@@ -161,54 +157,55 @@ void vector_pop_back(Vector *v)
   }
 }
 
-void __DEBUG_vector_print(Vector *v)
-{
-  printf("vector_size = %ld\n",vector_size(v));
-  printf("vector_capacity = %ld\n",vector_capacity(v));
-  for(int i = 0; i < v->size; i++)
-  {
-    printf("%d ",*(short*)vector_at(v, i));
-  }
-  puts("");
-}
+// #include <stdio.h>
+// void __DEBUG_Vector_Print(Vector *v)
+// {
+//   printf("Vector_Size = %ld\n",Vector_Size(v));
+//   printf("Vector_Capacity = %ld\n",Vector_Capacity(v));
+//   for(int i = 0; i < v->size; i++)
+//   {
+//     printf("%d ",*(short*)Vector_At(v, i));
+//   }
+//   puts("");
+// }
 
 // for test
 // int main()
 // {
 //   Vector v;
-//   vector_init(&v, 2);
+//   Vector_init(&v, 2);
 //   short a = 3, b = 10, c = 11, d = 50, e = 27, f = 15, g = 200;
-//   printf("vector_insert(&v, 0, &a);\n");
-//   vector_insert(&v, 0, &a);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_push_back(&v, &b);\n");
-//   vector_push_back(&v, &b);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_insert(&v, 0, &c);\n");
-//   vector_insert(&v, 0, &c);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_insert(&v, 2, &d);\n");
-//   vector_insert(&v, 2, &d);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_insert(&v, 4, &e);\n");
-//   vector_insert(&v, 4, &e);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_insert(&v, 3, &f);\n");
-//   vector_insert(&v, 3, &f);
-//   __DEBUG_vector_print(&v);
-//   printf("__vector_extend(&v);\n");
-//   __vector_extend(&v);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_shrink(&v);\n");
-//   vector_shrink(&v);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_push_back(&v, &g);\n");
-//   vector_push_back(&v, &g);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_remove(&v, 3);\n");
-//   vector_remove(&v, 3);
-//   __DEBUG_vector_print(&v);
-//   printf("vector_clear(&v);\n");
-//   vector_clear(&v);
-//   __DEBUG_vector_print(&v);
+//   printf("Vector_Insert(&v, 0, &a);\n");
+//   Vector_Insert(&v, 0, &a);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_PushBack(&v, &b);\n");
+//   Vector_PushBack(&v, &b);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_Insert(&v, 0, &c);\n");
+//   Vector_Insert(&v, 0, &c);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_Insert(&v, 2, &d);\n");
+//   Vector_Insert(&v, 2, &d);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_Insert(&v, 4, &e);\n");
+//   Vector_Insert(&v, 4, &e);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_Insert(&v, 3, &f);\n");
+//   Vector_Insert(&v, 3, &f);
+//   __DEBUG_Vector_Print(&v);
+//   printf("__Vector_Extend(&v);\n");
+//   __Vector_Extend(&v);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_Shrink(&v);\n");
+//   Vector_Shrink(&v);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_PushBack(&v, &g);\n");
+//   Vector_PushBack(&v, &g);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_Remove(&v, 3);\n");
+//   Vector_Remove(&v, 3);
+//   __DEBUG_Vector_Print(&v);
+//   printf("Vector_Clear(&v);\n");
+//   Vector_Clear(&v);
+//   __DEBUG_Vector_Print(&v);
 // }

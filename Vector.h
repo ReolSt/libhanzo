@@ -1,36 +1,37 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef Vector_H
+#define Vector_H
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
+#include <cmath>
 
-#define VECTOR_DEFAULT_CAPACITY 64
+#define Vector_DEFAULT_CAPACITY 64
 
 typedef struct _Vector{
+  int initialized;
   size_t unitsize;
   size_t capacity;
   size_t size;
   void *array;
 } Vector;
-int __for_vector_min(int a, int b);
-int __for_vector_max(int a, int b);
 
-void __vector_extend(Vector *v);
-void __vector_rshift(Vector *v, int index);
-void __vector_lshift(Vector *v, int index);
+void __Vector_Extend(Vector *v);
+void __Vector_RShift(Vector *v, int index);
+void __Vector_LShift(Vector *v, int index);
 
-void vector_init(Vector *v, size_t unitsize);
-void vector_clear(Vector *v);
-void vector_destroy(Vector *v);
-void vector_shrink(Vector *v);
-void vector_resize(Vector *v, size_t size);
-void vector_insert(Vector *v, int index, const void *x);
-void vector_remove(Vector *v, int index);
-void* vector_at(Vector *v, int index);
-void* vector_front(Vector *v);
-void* vector_back(Vector *v);
-size_t vector_size(Vector *v);
-size_t vector_capacity(Vector *v);
-void vector_push_back(Vector *v, const void *x);
-void vector_pop_back(Vector *v);
+void Vector_Initialize(Vector *v, size_t unitsize);
+int Vector_Initialized(Vecot *v);
+void Vector_Clear(Vector *v);
+void Vector_Destroy(Vector *v);
+void Vector_Shrink(Vector *v);
+void Vector_Resize(Vector *v, size_t size);
+void Vector_Insert(Vector *v, int index, const void *x);
+void Vector_Remove(Vector *v, int index);
+void* Vector_At(Vector *v, int index);
+void* Vector_Front(Vector *v);
+void* Vector_Back(Vector *v);
+size_t Vector_Size(Vector *v);
+size_t Vector_Capacity(Vector *v);
+void Vector_PushBack(Vector *v, const void *x);
+void Vector_PopBack(Vector *v);
 #endif

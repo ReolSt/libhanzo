@@ -1,99 +1,107 @@
 #include "String.h"
 
-void __string_extend_for_null_terminating(String *string)
+void __String_ExtendForNullTerminating(String *string)
 {
   if(string->string_vector.size + 2 >= string->string_vector.capacity)
   {
-    __vector_extend(&(string->string_vector));
+    __Vector_Extend(&(string->string_vector));
   }
 }
 
-void string_append(String *string, char ch)
+void String_Initialize(String *string, const char *s, size_t length)
 {
-  vector_push_back(&(string->string_vector), &ch);
-  string->size += 1;
-  __string_extend_for_null_terminating(string);
-}
-
-void string_pop(String *string)
-{
-  if(string->size > 0)
-  {
-    vector_pop_back(&(string->string_vector));
-    string->size -= 1;
-  }
-}
-
-void string_insert(String *string, int index, char ch)
-{
-  vector_insert(&(string->string_vector), index, &ch);
-  string->size += 1;
-  __string_extend_for_null_terminating(string);
-}
-
-void string_remove(String *string, int index)
-{
-  vector_remove(&(string->string_vector), index);
-  string->size -= 1;
-}
-
-void string_init(String *string, const char *s, size_t length)
-{
-  vector_init(&(string->string_vector), sizeof(char));
+  string->initialized = 1;
+  vector_Initialize(&(string->string_vector), sizeof(char));
   for(int i=0;i<length;++i)
   {
-    vector_push_back(&(string->string_vector), s + i);
+  Vector_PushBack(&(string->string_vector), s + i);
   }
   string->size = length;
 }
 
-void string_clear(String *string)
+void String_Append(String *string, char ch)
 {
-  vector_clear(&(string->string_vector));
+  vector_PushBack(&(string->string_vector), &ch);
+  string->size += 1;
+  __String_ExtendForNullTerminating(string);
+}
+
+void String_Pop(String *string)
+{
+  if(string->size > 0)
+  {
+    Vector_PopBack(&(string->string_vector));
+    string->size -= 1;
+  }
+}
+
+void String_Insert(String *string, int index, char ch)
+{
+  Vector_Insert(&(string->string_vector), index, &ch);
+  string->size += 1;
+  __String_ExtendForNullTerminating(string);
+}
+
+void String_Remove(String *string, int index)
+{
+  Vector_Remove(&(string->string_vector), index);
+  string->size -= 1;
+}
+
+void String_Clear(String *string)
+{
+  Vector_Clear(&(string->string_vector));
   string->size = 0;
 }
 
-void string_destroy(String *string)
+void String_Destroy(String *string)
 {
-  vector_destroy(&(string->string_vector));
+  string->initialized = 0;
+  Vector_Destroy(&(string->string_vector));
   string->size = 0;
 }
 
-const char *string_c_str(String *string)
+const char *String_CStr(String *string)
 {
-  return (const char*)vector_at(&(string->string_vector), 0);
+  return (const char*)Vector_At(&(string->string_vector), 0);
 }
 
-char string_at(String *string, int index)
+char String_At(String *string, int index)
 {
-  return *(char*)vector_at(&(string->string_vector), index);
+  return *(char*)Vector_At(&(string->string_vector), index);
 }
 
-char string_front(String *string)
+char *String_At(String *string, int index)
 {
-  return *(char*)vector_front(&(string->string_vector));
+  return (char*)Vector_At(&(string->string_vector), index);
 }
 
-char string_back(String *string)
+char String_Front(String *string)
 {
-  return *(char*)vector_back(&(string->string_vector));
+  return *(char*)Vector_Front(&(string->string_vector));
 }
 
-int string_length(String *string)
+char String_Back(String *string)
+{
+  return *(char*)Vector_Back(&(string->string_vector));
+}
+
+int String_Length(String *string)
 {
   return string->size;
 }
 
 //for test
+//#include <stdio.h>
 // int main()
 // {
 //   String string;
-//   string_init(&string, "Testasdf", 8);
-//   string_remove(&string, 4);
-//   printf("%s\n",string_c_str(&string));
-//   printf("%c\n",string_at(&string, 1));
-//   string_append(&string, 'a');
-//   string_append(&string, 'b');
-//   string_insert(&string, 2, 'd');
-//   printf("%s\n",string_c_str(&string));
+//   String_Initialize(&string, "Testasdf", 8);
+//   String_Remove(&string, 4);
+//   printf("%s\n",string_CStr(&string));
+//   printf("%c\n",string_At(&string, 1));
+//   String_Append(&string, 'a');
+//   String_Append(&string, 'b');
+//   String_Insert(&string, 2, 'd');
+//   printf("%s\n",string_CStr(&string));
 // }
