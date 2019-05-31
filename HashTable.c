@@ -1,4 +1,6 @@
 #include "HashTable.h"
+#include <memory.h>
+#include <limit.h>
 
 int HashTable_Initialized(HashTable *hash_table)
 {
@@ -28,17 +30,29 @@ void HashTable_SetCompareFunction
 {
   hash_table->comp_func = comp_func;
 }
-void HashTable_Insert(HashTable *hash_table, void *data);
-void *HashTable_Search(HashTable *hash_table, void *data);
-void HashTable_Clear(HashTable *hash_table);
-void HashTable_Destroy(HashTable *hash_table);
+void HashTable_Insert(HashTable *hash_table, void *data)
+{
+
+}
+void *HashTable_Search(HashTable *hash_table, void *data)
+{
+
+}
+void HashTable_Clear(HashTable *hash_table)
+{
+
+}
+void HashTable_Destroy(HashTable *hash_table)
+{
+
+}
 
 unsigned int HashFunc_DEFAULT(void *, size_t unitsize)
 {
 
 }
 
-int IsLittleEndian()
+int __HashFunc_IsLittleEndian()
 {
   unsigned int x = 1;
   char *c = (char*) &x;
@@ -47,15 +61,11 @@ int IsLittleEndian()
 
 int CompFunc_DEFAULT(void *da, void *db, size_t unitsize)
 {
-  if(unitsize == 0)
-  {
-    return -2147483648;
-  }
   char *a = (char*)da, *b = (char*)db;
-  if(IsLittleEndian)
+  if(IsLittleEndian())
   {
-    char *la = (char *)malloc(unitsize), *lb = (char *)malloc(unitsize);
-    for(int i=0; i < unitsize; i+=2)
+    char la[unitsize], lb[unitsize];
+    for(int i=0; i < unitsize; i += 2)
     {
       la[i] = a[i + 1];
       la[i + 1] = a[i];

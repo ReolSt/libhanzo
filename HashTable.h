@@ -1,8 +1,8 @@
-#ifndef HASHTABLE_H
-#define HASHTABLE_H
+#ifndef HANZO_HASHTABLE_H
+#define HANZO_HASHTABLE_H
 #include "Vector.h"
 
-typedef struct _Hash_Table
+typedef struct __Hanzo_Hash_Table
 {
   int initialized;
   size_t unitsize;
@@ -24,7 +24,7 @@ void HashTable_Initialize
   CompareFunction comp_func,
   size_t unitsize
 );
-int HashTable_Initialized(HashTable *hash_table);
+ReturnValue HashTable_Initialized(HashTable *hash_table);
 HashFunction HashTable_GetHashFunction(HashTable *hash_table);
 void HashTable_SetHashFunction
 (
