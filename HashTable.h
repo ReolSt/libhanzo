@@ -10,9 +10,13 @@ typedef struct _Hash_Table
   HashFunction hash_func;
 } HashTable;
 
-typedef unsigned int (*HashFunction)(HashTable *, void *);
-typedef int (*CompareFunction)(void *, void *);
-
+typedef unsigned int (*HashFunction)(void *, size_t);
+typedef int (*CompareFunction)(void *, void *, size_t);
+void HashTable_Initialize
+(
+  HashTable *hash_table,
+  size_t unitsize
+);
 void HashTable_Initialize
 (
   HashTable *hash_table,
@@ -37,4 +41,7 @@ void HashTable_Insert(HashTable *hash_table, void *data);
 void *HashTable_Search(HashTable *hash_table, void *data);
 void HashTable_Clear(HashTable *hash_table);
 void HashTable_Destroy(HashTable *hash_table);
+
+unsigned int HashFunc_DEFAULT(void *, size_t unitsize);
+int CompFunc_DEFAULT(void *, void *, size_t unitsize);
 #endif

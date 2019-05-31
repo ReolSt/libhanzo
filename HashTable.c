@@ -32,3 +32,62 @@ void HashTable_Insert(HashTable *hash_table, void *data);
 void *HashTable_Search(HashTable *hash_table, void *data);
 void HashTable_Clear(HashTable *hash_table);
 void HashTable_Destroy(HashTable *hash_table);
+
+unsigned int HashFunc_DEFAULT(void *, size_t unitsize)
+{
+
+}
+
+int IsLittleEndian()
+{
+  unsigned int x = 1;
+  char *c = (char*) &x;
+  return (int)*c;
+}
+
+int CompFunc_DEFAULT(void *da, void *db, size_t unitsize)
+{
+  if(unitsize == 0)
+  {
+    return -2147483648;
+  }
+  char *a = (char*)da, *b = (char*)db;
+  if(IsLittleEndian)
+  {
+    char *la = (char *)malloc(unitsize), *lb = (char *)malloc(unitsize);
+    for(int i=0; i < unitsize; i+=2)
+    {
+      la[i] = a[i + 1];
+      la[i + 1] = a[i];
+      lb[i] = b[i + 1];
+      lb[i + 1] = b[i];
+    }
+    for(int i=unitsize - 1; i >= 0; --i)
+    {
+      if(*(a + i) > *(b + i))
+      {
+        return 1;
+      }
+      else if(*(a + i) < *(b + i))
+      {
+        return -1;
+      }
+    }
+    return 0;
+  }
+  else
+  {
+    for(int i = 0; i < unitsize; ++i)
+    {
+      if(*(a + i) > *(b + i))
+      {
+        return 1;
+      }
+      else if(*(a + i) < *(b + i))
+      {
+        return -1;
+      }
+    }
+    return 0;
+  }
+}
