@@ -9,130 +9,131 @@
 #endif
 
 
-void __HanzoVector_Extend(HanzoVector *hanzo_vector)
+void __HanzoVector_Extend(HanzoVector * vector)
 {
-  if(hanzo_vector->array!=NULL)
+  if(vector->array!=NULL)
   {
-    void *newarray = calloc(hanzo_vector->capacity * 2, hanzo_vector->unitsize);
-    hanzo_vector->capacity*=2;
-    memcpy(newarray, hanzo_vector->array, hanzo_vector->size * hanzo_vector->unitsize);
-    free(hanzo_vector->array);
-    hanzo_vector->array = newarray;
+    void *newarray = calloc(vector->capacity * 2, vector->unitsize);
+    vector->capacity*=2;
+    memcpy(newarray, vector->array, vector->size * vector->unitsize);
+    free(vector->array);
+    vector->array = newarray;
   }
 }
 
-void __HanzoVector_RShift(HanzoVector *hanzo_vector, int index)
+void __HanzoVector_RShift(HanzoVector * vector, int index)
 {
-  if(hanzo_vector->size > 0 && index >= 0 && index < hanzo_vector->size)
+  if(vector->size > 0 && index >= 0 && index < vector->size)
   {
-    hanzo_vector->size += 1;
-    if(hanzo_vector->size > hanzo_vector->capacity)
+    vector->size += 1;
+    if(vector->size > vector->capacity)
     {
-      __HanzoVector_Extend(hanzo_vector);
+      __HanzoVector_Extend(vector);
     }
-    memmove((char*)hanzo_vector->array + (index + 1) * hanzo_vector->unitsize,
-            (char*)hanzo_vector->array + index * hanzo_vector->unitsize,
-            (hanzo_vector->size - index) * hanzo_vector->unitsize);
+    memmove((char*)vector->array + (index + 1) * vector->unitsize,
+            (char*)vector->array + index * vector->unitsize,
+            (vector->size - index) * vector->unitsize);
   }
 }
 
-void __HanzoVector_LShift(HanzoVector *hanzo_vector, int index)
+void __HanzoVector_LShift(HanzoVector * vector, int index)
 {
-  if(index>=0 && index < hanzo_vector->size)
+  if(index>=0 && index < vector->size)
   {
-    memmove((char*)hanzo_vector->array + index * hanzo_vector->unitsize,
-            (char*)hanzo_vector->array + (index + 1) * hanzo_vector->unitsize,
-            (hanzo_vector->size - index) * hanzo_vector->unitsize);
-    hanzo_vector->size -= 1;
+    memmove((char*)vector->array + index * vector->unitsize,
+            (char*)vector->array + (index + 1) * vector->unitsize,
+            (vector->size - index) * vector->unitsize);
+    vector->size -= 1;
   }
 }
 
-void HanzoVector_Initialize(HanzoVector *hanzo_vector, size_t unitsize)
+void HanzoVector_Initialize(HanzoVector * vector, size_t unitsize)
 {
-  hanzo_vector->initialized = 1;
-  hanzo_vector->unitsize = unitsize;
-  hanzo_vector->size = 0;
-  hanzo_vector->capacity = HANZO_VECTOR_DEFAULT_CAPACITY;
-  hanzo_vector->array = calloc(hanzo_vector->capacity, hanzo_vector->unitsize);
+  vector->unitsize = unitsize;
+  vector->size = 0;
+  vector->capacity = HANZO_VECTOR_DEFAULT_CAPACITY;
+  vector->array = calloc(vector->capacity, vector->unitsize);
 //function pointers
-  hanzo_vector->Initialize = HanzoVector_Initialize;
-  hanzo_vector->IsInitialized = HanzoVector_IsInitialized;
-  hanzo_vector->Clear = HanzoVector_Clear;
-  hanzo_vector->Destroy = HanzoVector_Destroy;
-  hanzo_vector->Shrink = HanzoVector_Shrink;
-  hanzo_vector->Resize = HanzoVector_Resize;
-  hanzo_vector->Insert = HanzoVector_Insert;
-  hanzo_vector->Remove = HanzoVector_Remove;
-  hanzo_vector->At = HanzoVector_At;
-  hanzo_vector->Front = HanzoVector_Front;
-  hanzo_vector->Back = HanzoVector_Back;
-  hanzo_vector->Size = HanzoVector_Size;
-  hanzo_vector->Capacity = HanzoVector_Capacity;
-  hanzo_vector->PushBack = HanzoVector_PushBack;
-  hanzo_vector->PopBack = HanzoVector_PopBack;
+  vector->Initialize = HanzoVector_Initialize;
+  vector->IsInitialized = HanzoVector_IsInitialized;
+  vector->Clear = HanzoVector_Clear;
+  vector->Destroy = HanzoVector_Destroy;
+  vector->Shrink = HanzoVector_Shrink;
+  vector->Resize = HanzoVector_Resize;
+  vector->Insert = HanzoVector_Insert;
+  vector->Remove = HanzoVector_Remove;
+  vector->At = HanzoVector_At;
+  vector->Front = HanzoVector_Front;
+  vector->Back = HanzoVector_Back;
+  vector->Size = HanzoVector_Size;
+  vector->Capacity = HanzoVector_Capacity;
+  vector->PushBack = HanzoVector_PushBack;
+  vector->PopBack = HanzoVector_PopBack;
+//
+  vector->initialized = 1;
 }
 
-int HanzoVector_IsInitialized(HanzoVector *hanzo_vector)
+int HanzoVector_IsInitialized(HanzoVector * vector)
 {
-  return hanzo_vector->initialized;
+  return vector->initialized;
 }
 
-void HanzoVector_Clear(HanzoVector *hanzo_vector)
+void HanzoVector_Clear(HanzoVector * vector)
 {
-  free(hanzo_vector->array);
-  HanzoVector_Initialize(hanzo_vector, hanzo_vector->unitsize);
+  free(vector->array);
+  HanzoVector_Initialize(vector, vector->unitsize);
 }
 
-void HanzoVector_Destroy(HanzoVector *hanzo_vector)
+void HanzoVector_Destroy(HanzoVector * vector)
 {
-  hanzo_vector->initialized = 0;
-  hanzo_vector->size = 0;
-  hanzo_vector->capacity = 0;
-  free(hanzo_vector->array);
-  hanzo_vector->array = NULL;
+  vector->initialized = 0;
+  vector->size = 0;
+  vector->capacity = 0;
+  free(vector->array);
+  vector->array = NULL;
 }
 
-void HanzoVector_Shrink(HanzoVector *hanzo_vector)
+void HanzoVector_Shrink(HanzoVector * vector)
 {
-  if(hanzo_vector->capacity > HANZO_VECTOR_DEFAULT_CAPACITY)
+  if(vector->capacity > HANZO_VECTOR_DEFAULT_CAPACITY)
   {
-    HanzoVector_Resize(hanzo_vector, hanzo_vector->size + 1);
+    HanzoVector_Resize(vector, vector->size + 1);
   }
 }
 
-void HanzoVector_Resize(HanzoVector *hanzo_vector, size_t size)
+void HanzoVector_Resize(HanzoVector * vector, size_t size)
 {
-  hanzo_vector->capacity = size;
-  void* resized_array = malloc(hanzo_vector->capacity * hanzo_vector->unitsize);
-  memcpy(resized_array, hanzo_vector->array, hanzo_vector->capacity * hanzo_vector->unitsize);
-  free(hanzo_vector->array);
-  hanzo_vector->array = resized_array;
-  hanzo_vector->size = min(hanzo_vector->size, hanzo_vector->capacity);
+  vector->capacity = size;
+  void* resized_array = malloc(vector->capacity * vector->unitsize);
+  memcpy(resized_array, vector->array, vector->capacity * vector->unitsize);
+  free(vector->array);
+  vector->array = resized_array;
+  vector->size = min(vector->size, vector->capacity);
 }
 
-void HanzoVector_Insert(HanzoVector *hanzo_vector, int index, const void *x)
+void HanzoVector_Insert(HanzoVector * vector, int index, const void *x)
 {
-  if(index >= 0 && index < hanzo_vector->size)
+  if(index >= 0 && index < vector->size)
   {
-    __HanzoVector_RShift(hanzo_vector, index);
-    memcpy((char*)hanzo_vector->array + index * hanzo_vector->unitsize, x, hanzo_vector->unitsize);
+    __HanzoVector_RShift(vector, index);
+    memcpy((char*)vector->array + index * vector->unitsize, x, vector->unitsize);
   }
-  else if(index == hanzo_vector->size)
+  else if(index == vector->size)
   {
-    HanzoVector_PushBack(hanzo_vector, x);
+    HanzoVector_PushBack(vector, x);
   }
 }
 
-void HanzoVector_Remove(HanzoVector *hanzo_vector, int index)
+void HanzoVector_Remove(HanzoVector * vector, int index)
 {
-  __HanzoVector_LShift(hanzo_vector, index);
+  __HanzoVector_LShift(vector, index);
 }
 
-void* HanzoVector_At(HanzoVector *hanzo_vector, int index)
+void* HanzoVector_At(HanzoVector * vector, int index)
 {
-  if(index >= 0 && index < hanzo_vector->size)
+  if(index >= 0 && index < vector->size)
   {
-    return (char*)hanzo_vector->array + index * hanzo_vector->unitsize;
+    return (char*)vector->array + index * vector->unitsize;
   }
   else
   {
@@ -140,55 +141,56 @@ void* HanzoVector_At(HanzoVector *hanzo_vector, int index)
   }
 }
 
-void* HanzoVector_Front(HanzoVector *hanzo_vector)
+void* HanzoVector_Front(HanzoVector * vector)
 {
-  return hanzo_vector->array;
+  return vector->array;
 }
 
-void* HanzoVector_Back(HanzoVector *hanzo_vector)
+void* HanzoVector_Back(HanzoVector * vector)
 {
-  return (char*)hanzo_vector->array + (hanzo_vector->size - 1) * hanzo_vector->unitsize;
+  return (char*)vector->array + (vector->size - 1) * vector->unitsize;
 }
 
-size_t HanzoVector_Size(HanzoVector *hanzo_vector)
+size_t HanzoVector_Size(HanzoVector * vector)
 {
-  return hanzo_vector->size;
+  return vector->size;
 }
 
-size_t HanzoVector_Capacity(HanzoVector *hanzo_vector)
+size_t HanzoVector_Capacity(HanzoVector * vector)
 {
-  return hanzo_vector->capacity;
+  return vector->capacity;
 }
 
-void HanzoVector_PushBack(HanzoVector *hanzo_vector, const void *x)
+void HanzoVector_PushBack(HanzoVector * vector, const void *x)
 {
-  hanzo_vector->size+=1;
-  if(hanzo_vector->size > hanzo_vector->capacity)
+  vector->size+=1;
+  if(vector->size > vector->capacity)
   {
-    __HanzoVector_Extend(hanzo_vector);
+    __HanzoVector_Extend(vector);
   }
-  memcpy((char*)hanzo_vector->array + (hanzo_vector->size - 1) * hanzo_vector->unitsize, x, hanzo_vector->unitsize);
+  memcpy((char*)vector->array + (vector->size - 1) * vector->unitsize, x, vector->unitsize);
 }
 
-void HanzoVector_PopBack(HanzoVector *hanzo_vector)
+void HanzoVector_PopBack(HanzoVector * vector)
 {
-  if(hanzo_vector->size > 0)
+  if(vector->size > 0)
   {
-    hanzo_vector->size -= 1;
+    memset((char*)vector->array + (vector->size - 1) * vector->unitsize, 0, vector->unitsize);
+    vector->size -= 1;
   }
 }
 
-#include <stdio.h>
-void __DEBUG_HanzoVector_Print(HanzoVector *hanzo_vector)
-{
-  printf("HanzoVector_Size = %ld\n",HanzoVector_Size(hanzo_vector));
-  printf("HanzoVector_Capacity = %ld\n",HanzoVector_Capacity(hanzo_vector));
-  for(int i = 0; i < hanzo_vector->size; i++)
-  {
-    printf("%d ",*(short*)HanzoVector_At(hanzo_vector, i));
-  }
-  puts("");
-}
+// #include <stdio.h>
+// void __DEBUG_HanzoVector_Print(HanzoVector * vector)
+// {
+//   printf("HanzoVector_Size = %ld\n",HanzoVector_Size(vector));
+//   printf("HanzoVector_Capacity = %ld\n",HanzoVector_Capacity(vector));
+//   for(int i = 0; i < vector->size; i++)
+//   {
+//     printf("%d ",*(short*)HanzoVector_At(vector, i));
+//   }
+//   puts("");
+// }
 
 // for test
 // int main()

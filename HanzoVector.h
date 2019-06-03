@@ -1,9 +1,13 @@
 #ifndef HANZO_VECTOR_H
 #define HANZO_VECTOR_H
+
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
 #include <stdlib.h>
+
+#include "HanzoCall.h"
+
 #define HANZO_VECTOR_DEFAULT_CAPACITY 64
 
 typedef struct __Hanzo_Vector{
@@ -12,6 +16,7 @@ typedef struct __Hanzo_Vector{
   size_t capacity;
   size_t size;
   void *array;
+
   void (*Initialize)(struct __Hanzo_Vector *, size_t);
   int (*IsInitialized)(struct __Hanzo_Vector *);
   void (*Clear)(struct __Hanzo_Vector *);
@@ -30,23 +35,23 @@ typedef struct __Hanzo_Vector{
 
 } HanzoVector;
 
-void __HanzoVector_Extend(HanzoVector *hanzo_vector);
-void __HanzoVector_RShift(HanzoVector *hanzo_vector, int index);
-void __HanzoVector_LShift(HanzoVector *hanzo_vector, int index);
+void __HanzoVector_Extend(HanzoVector * vector);
+void __HanzoVector_RShift(HanzoVector * vector, int index);
+void __HanzoVector_LShift(HanzoVector * vector, int index);
 
-void HanzoVector_Initialize(HanzoVector *hanzo_vector, size_t unitsize);
-int HanzoVector_IsInitialized(HanzoVector *hanzo_vector);
-void HanzoVector_Clear(HanzoVector *hanzo_vector);
-void HanzoVector_Destroy(HanzoVector *hanzo_vector);
-void HanzoVector_Shrink(HanzoVector *hanzo_vector);
-void HanzoVector_Resize(HanzoVector *hanzo_vector, size_t size);
-void HanzoVector_Insert(HanzoVector *hanzo_vector, int index, const void *x);
-void HanzoVector_Remove(HanzoVector *hanzo_vector, int index);
-void* HanzoVector_At(HanzoVector *hanzo_vector, int index);
-void* HanzoVector_Front(HanzoVector *hanzo_vector);
-void* HanzoVector_Back(HanzoVector *hanzo_vector);
-size_t HanzoVector_Size(HanzoVector *hanzo_vector);
-size_t HanzoVector_Capacity(HanzoVector *hanzo_vector);
-void HanzoVector_PushBack(HanzoVector *hanzo_vector, const void *x);
-void HanzoVector_PopBack(HanzoVector *hanzo_vector);
+void HanzoVector_Initialize(HanzoVector * vector, size_t unitsize);
+int HanzoVector_IsInitialized(HanzoVector * vector);
+void HanzoVector_Clear(HanzoVector * vector);
+void HanzoVector_Destroy(HanzoVector * vector);
+void HanzoVector_Shrink(HanzoVector * vector);
+void HanzoVector_Resize(HanzoVector * vector, size_t size);
+void HanzoVector_Insert(HanzoVector * vector, int index, const void * x);
+void HanzoVector_Remove(HanzoVector * vector, int index);
+void* HanzoVector_At(HanzoVector * vector, int index);
+void* HanzoVector_Front(HanzoVector * vector);
+void* HanzoVector_Back(HanzoVector * vector);
+size_t HanzoVector_Size(HanzoVector * vector);
+size_t HanzoVector_Capacity(HanzoVector * vector);
+void HanzoVector_PushBack(HanzoVector * vector, const void * x);
+void HanzoVector_PopBack(HanzoVector * vector);
 #endif

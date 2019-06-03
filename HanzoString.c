@@ -1,129 +1,139 @@
 #include "HanzoString.h"
 
-void __HanzoString_ExtendForNullTerminating(HanzoString *hanzo_string)
+void __HanzoString_ExtendForNullTerminating(HanzoString *string)
 {
-  if(hanzo_string->string_vector.size + 2 >= hanzo_string->string_vector.capacity)
+  if(string->string_vector.size + 2 >= string->string_vector.capacity)
   {
-    __HanzoVector_Extend(&(hanzo_string->string_vector));
+    __HanzoVector_Extend(&(string->string_vector));
   }
 }
 
-void HanzoString_Initialize(HanzoString *hanzo_string, const char *s, size_t length)
+void HanzoString_Initialize(HanzoString *string, const char *s, size_t length)
 {
-  HanzoVector_Initialize(&(hanzo_string->string_vector), sizeof(char));
+  HanzoVector_Initialize(&(string->string_vector), sizeof(char));
   for(int i=0;i<length;++i)
   {
-  HanzoVector_PushBack(&(hanzo_string->string_vector), s + i);
+  HanzoVector_PushBack(&(string->string_vector), s + i);
   }
-  hanzo_string->size = length;
-  hanzo_string->initialized = 1;
+  string->size = length;
 //function pointers
-  hanzo_string->Initialize = HanzoString_Initialize;
-  hanzo_string->IsInitialized = HanzoString_IsInitialized;
-  hanzo_string->Append = HanzoString_Append;
-  hanzo_string->Pop = HanzoString_Pop;
-  hanzo_string->Insert = HanzoString_Insert;
-  hanzo_string->Remove = HanzoString_Remove;
-  hanzo_string->Clear = HanzoString_Clear;
-  hanzo_string->Destroy = HanzoString_Destroy;
-  hanzo_string->CStr = HanzoString_CStr;
-  hanzo_string->At = HanzoString_At;
-  hanzo_string->AtPtr = HanzoString_AtPtr;
-  hanzo_string->Front = HanzoString_Front;
-  hanzo_string->Back = HanzoString_Back;
-  hanzo_string->Length =HanzoString_Length;
+  string->Initialize = HanzoString_Initialize;
+  string->IsInitialized = HanzoString_IsInitialized;
+  string->Append = HanzoString_Append;
+  string->PushBack = HanzoString_PushBack;
+  string->PopBack = HanzoString_PopBack;
+  string->Insert = HanzoString_Insert;
+  string->Remove = HanzoString_Remove;
+  string->Clear = HanzoString_Clear;
+  string->Destroy = HanzoString_Destroy;
+  string->CStr = HanzoString_CStr;
+  string->At = HanzoString_At;
+  string->AtPtr = HanzoString_AtPtr;
+  string->Front = HanzoString_Front;
+  string->Back = HanzoString_Back;
+  string->Length =HanzoString_Length;
+//
+  string->initialized = 1;
 }
 
-int HanzoString_IsInitialized(HanzoString *hanzo_string)
+int HanzoString_IsInitialized(HanzoString *string)
 {
-  return hanzo_string->initialized;
+  return string->initialized;
 }
 
-void HanzoString_Clear(HanzoString *hanzo_string)
+void HanzoString_Clear(HanzoString *string)
 {
-  HanzoVector_Clear(&(hanzo_string->string_vector));
-  hanzo_string->size = 0;
+  HanzoVector_Clear(&(string->string_vector));
+  string->size = 0;
 }
 
-void HanzoString_Destroy(HanzoString *hanzo_string)
+void HanzoString_Destroy(HanzoString *string)
 {
-  hanzo_string->initialized = 0;
-  HanzoVector_Destroy(&(hanzo_string->string_vector));
-  hanzo_string->size = 0;
+  string->initialized = 0;
+  HanzoVector_Destroy(&(string->string_vector));
+  string->size = 0;
 }
 
-void HanzoString_Append(HanzoString *hanzo_string, char ch)
+void HanzoString_PushBack(HanzoString *string, char ch)
 {
-  HanzoVector_PushBack(&(hanzo_string->string_vector), &ch);
-  hanzo_string->size += 1;
-  __HanzoString_ExtendForNullTerminating(hanzo_string);
+  HanzoVector_PushBack(&(string->string_vector), &ch);
+  string->size += 1;
+  __HanzoString_ExtendForNullTerminating(string);
 }
 
-void HanzoString_Pop(HanzoString *hanzo_string)
+
+void HanzoString_PopBack(HanzoString *string)
 {
-  if(hanzo_string->size > 0)
+  if(string->size > 0)
   {
-    HanzoVector_PopBack(&(hanzo_string->string_vector));
-    hanzo_string->size -= 1;
+    HanzoVector_PopBack(&(string->string_vector));
+    string->size -= 1;
   }
 }
 
-void HanzoString_Insert(HanzoString *hanzo_string, int index, char ch)
+void HanzoString_Append(HanzoString *string, const char * s, size_t length)
 {
-  HanzoVector_Insert(&(hanzo_string->string_vector), index, &ch);
-  hanzo_string->size += 1;
-  __HanzoString_ExtendForNullTerminating(hanzo_string);
+  for(int i = 0; i < length; ++i)
+  {
+    HanzoString_PushBack(string, s[i]);
+  }
 }
 
-void HanzoString_Remove(HanzoString *hanzo_string, int index)
+void HanzoString_Insert(HanzoString *string, int index, char ch)
 {
-  HanzoVector_Remove(&(hanzo_string->string_vector), index);
-  hanzo_string->size -= 1;
+  HanzoVector_Insert(&(string->string_vector), index, &ch);
+  string->size += 1;
+  __HanzoString_ExtendForNullTerminating(string);
 }
 
-const char *HanzoString_CStr(HanzoString *hanzo_string)
+void HanzoString_Remove(HanzoString *string, int index)
 {
-  return (const char*)HanzoVector_At(&(hanzo_string->string_vector), 0);
+  HanzoVector_Remove(&(string->string_vector), index);
+  string->size -= 1;
 }
 
-char HanzoString_At(HanzoString *hanzo_string, int index)
+const char *HanzoString_CStr(HanzoString *string)
 {
-  return *(char*)HanzoVector_At(&(hanzo_string->string_vector), index);
+  return (const char*)HanzoVector_At(&(string->string_vector), 0);
 }
 
-char *HanzoString_AtPtr(HanzoString *hanzo_string, int index)
+char HanzoString_At(HanzoString *string, int index)
 {
-  return (char*)HanzoVector_At(&(hanzo_string->string_vector), index);
+  return *(char*)HanzoVector_At(&(string->string_vector), index);
 }
 
-char HanzoString_Front(HanzoString *hanzo_string)
+char *HanzoString_AtPtr(HanzoString *string, int index)
 {
-  return *(char*)HanzoVector_Front(&(hanzo_string->string_vector));
+  return (char*)HanzoVector_At(&(string->string_vector), index);
 }
 
-char HanzoString_Back(HanzoString *hanzo_string)
+char HanzoString_Front(HanzoString *string)
 {
-  return *(char*)HanzoVector_Back(&(hanzo_string->string_vector));
+  return *(char*)HanzoVector_Front(&(string->string_vector));
 }
 
-int HanzoString_Length(HanzoString *hanzo_string)
+char HanzoString_Back(HanzoString *string)
 {
-  return hanzo_string->size;
+  return *(char*)HanzoVector_Back(&(string->string_vector));
 }
 
-//for test
-#include <stdio.h>
-#include "HanzoCall.h"
-int main()
+int HanzoString_Length(HanzoString *string)
 {
-  HanzoString string;
-  HanzoString_Initialize(&string, "Testasdf", 8);
-  string.Remove(&string, 4);
-  printf("%s\n",string.CStr(&string));
-  printf("%c\n",string.At(&string, 1));
-  string.Append(&string, 'a');
-  string.Append(&string, 'b');
-  HanzoCall(string, Insert, 2, 'd');
-  // string.Insert(&string, 2, 'd');
-  printf("%s\n",string.CStr(&string));
+  return string->size;
 }
+
+// for test
+// #include <stdio.h>
+// #include "HanzoCall.h"
+// int main()
+// {
+//   HanzoString string;
+//   HanzoString_Initialize(&string, "Testasdf", 8);
+//   string.Remove(&string, 4);
+//   printf("%s\n",string.CStr(&string));
+//   printf("%c\n",string.At(&string, 1));
+//   string.PushBack(&string, 'a');
+//   string.PushBack(&string, 'b');
+//   HanzoCall(string, Insert, 2, 'd');
+//   printf("%s\n",string.CStr(&string));
+// }
